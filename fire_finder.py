@@ -47,14 +47,18 @@ class FireFinder(object):
         return output, fire_coords, fire_cnts
 
 def run():
-    video_capture = cv2.VideoCapture(0)
+    import os
+    video_device = int(os.environ.get('video_device', 1))
+    print(video_device)
+    video_capture = cv2.VideoCapture(video_device)
     ff = FireFinder()
 
-    while(cv2.waitKey(1) != 27):
+    while cv2.waitKey(1) != 27:
         ret, frame = video_capture.read() #Capture frame-by-frame
         if not ret: #Invalid
             print(ret)
             print(frame)
+            raise RuntimeError('Cannot open frame from video camera')
 
         proc, fire_coords, fire_cnts = ff.get_fires(frame)
         for point in fire_coords:
