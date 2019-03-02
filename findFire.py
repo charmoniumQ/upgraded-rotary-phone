@@ -27,7 +27,8 @@ class findFire(object):
 		hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 		blurred = cv2.GaussianBlur(hsv, (11, 11), 0)
 		mask = cv2.inRange(hsv, (0, 0, 245), (42, 120, 255))
-		thresh = cv2.erode(mask, None, iterations=10)
+		thresh = cv2.erode(mask, None, iterations=2)
+		thresh = cv2.dilate(thresh, None, iterations=4)
 
 		return mask
 
@@ -58,8 +59,9 @@ class findFire(object):
 				print frame
 
 			proc = self.process_image(frame)
+			for point in self.fire_coords:
+				cv2.circle(proc, point, 1, (0,255,0), thickness=3, lineType=8, shift=0)
 			cv2.imshow('proc', proc) #Display the resulting frame
-			# self.
 
 		#release the capture
 		temp = cap.release() #if frame read correctly == True
