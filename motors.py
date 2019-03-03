@@ -1,9 +1,9 @@
 import RPi.GPIO as GPIO
 from time import sleep
 
-PIN_PAN = 18
-PIN_TILT = 19
-PIN_SHOOT = 20 # TODO check pins
+PIN_PAN = 12
+PIN_TILT = 16
+PIN_SHOOT = 18 # TODO check pins
 
 # Setup
 GPIO.setmode(GPIO.BOARD)
@@ -25,7 +25,7 @@ def write_angle_begin(servo_pin, servo_pwm, angle):
 
 def write_angle_end(servo_pin, servo_pwm):
     GPIO.output(servo_pin, False)
-    pwm.ChangeDutyCycle(0)
+    servo_pwm.ChangeDutyCycle(0)
 
 
 def aim_turret(x_deg, y_deg):
@@ -39,9 +39,13 @@ def aim_turret(x_deg, y_deg):
 
 def shoot(num_seconds):
     GPIO.output(PIN_SHOOT, GPIO.HIGH)
+    print("starting")
     sleep(num_seconds)
+    print("ending")
     GPIO.output(PIN_SHOOT, GPIO.LOW)
 
 def aim_and_shoot(x_deg, y_deg, num_seconds):
-    aim_turret(x_deg, y_xeg)
+    aim_turret(x_deg, y_deg)
     shoot(num_seconds)
+
+aim_and_shoot(90, 90, 2)
