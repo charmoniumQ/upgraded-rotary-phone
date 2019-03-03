@@ -4,7 +4,7 @@ import numpy as np
 
 """ Identify and locate fire in the environment. """
 
-MIN_AREA = 10
+MIN_AREA = 500
 
 class FireFinder(object):
     def getLight(self, frame):
