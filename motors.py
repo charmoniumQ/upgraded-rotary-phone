@@ -1,5 +1,5 @@
-#import RPi.GPIO as GPIO
-from mock_gpio import GPIO
+import RPi.GPIO as GPIO
+#from mock_gpio import GPIO
 from concurrent.futures import ThreadPoolExecutor
 from time import sleep
 

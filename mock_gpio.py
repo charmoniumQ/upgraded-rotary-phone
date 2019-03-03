@@ -1,3 +1,5 @@
+RuntimeWarning('Mocked GPIO')
+
 class GPIO_(object):
     BOARD = None
     OUT = None
