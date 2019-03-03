@@ -1,10 +1,11 @@
 from __future__ import print_function
 import os
 import cv2
-from .fire_finder import FireFinder
-from . import geometry
+from fire_finder import FireFinder
+import geometry
 from motors import Shooter, Driver
 from control import Controller
+from concurrent.futures import ThreadPoolExecutor
 
 # config
 video_device = int(os.environ.get('video_device', 1))
@@ -35,12 +36,14 @@ def run_shooter(shooter):
         if not ret: #Invalid
             print(ret)
             print(frame)
-            raise RuntimeError()
+            #raise RuntimeError()
 
-        proc, fire_px_coords, fire_cnts = fire_finder.get_fires(frame)
-        all_fire_angles = list(map(geometry.px_coords_to_angles, fire_px_coords))
-        fire_angle = prioritize(all_fire_angles)
-        shooter.aim_and_shoot(fire_angle[0], fire_angle[1], 2) # TODO adjust Time to Shoot
+        #proc, fire_px_coords, fire_cnts = fire_finder.get_fires(frame)
+        #all_fire_angles = list(map(geometry.px_coords_to_angles, fire_px_coords))
+        #fire_angle = prioritize(all_fire_angles)
+        #shooter.aim_and_shoot(fire_angle[0], fire_angle[1], 2) # TODO adjust Time to Shoot
+        shooter.aim_and_shoot(90, 90, 2) # TODO adjust Time to Shoot
+        time.sleep(1)
 
 # main
 video_capture = cv2.VideoCapture(video_device)
