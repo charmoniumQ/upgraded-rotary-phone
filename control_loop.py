@@ -1,8 +1,7 @@
 from __future__ import print_function
 import cv2
 from .fire_finder import FireFinder
-import motors
-from .driver import Driver
+from motors import Shooter, Driver
 
 
 def px_coords_to_space_coords(coords):
@@ -17,14 +16,18 @@ def coords_to_degrees(fire_coords):
     return (90, 90)
 
 
-fire_finder = FireFinder()
-shooter = Shooter()
-driver = Driver()
-while True:
+def run_driver(driver):
+    fire_finder = FireFinder()
+    while True:
+        driver.drive(0, 1) # TODO pick intelligently
+
+
+def run_shooter(shooter):
+    while True:
         ret, frame = fire_finder.cap.read() #Capture frame-by-frame
         if not ret: #Invalid
-                print(ret)
-                print(frame)
+            print(ret)
+            print(frame)
 
         proc, fire_px_coords, fire_cnts = fire_finder.get_fires(frame)
         fire_coords = list(map(px_coords_to_space_coords, fire_px_coords))
@@ -33,7 +36,17 @@ while True:
 
         x_deg, y_deg = coords_to_degrees(fire_coords)
 
-        motors.aim_and_shoot(x_deg, y_deg, 2) # TODO adjust Time to Shoot
+        shooter.aim_and_shoot(x_deg, y_deg, 2) # TODO adjust Time to Shoot
+
+
+shooter = Shooter()
+driver = Driver()
+with ThreadPoolExecutor(max_workers=10) as executor:
+    task1 = executor.submit(run_shooter, shooter)
+    task2 = executor.submit(run_driver, driver)
+
+    task1.result()
+    task2.result()
 
 
 #release the capture
