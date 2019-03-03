@@ -5,7 +5,10 @@ angle is an angle offset from the center in radians
 floor_coords are coordinages on the floor in centimeters
 '''
 
-from scipy.optimize import minimize
+#from scipy.optimize import minimize
+import math as np
+
+np.deg2rad = np.radians
 
 fov = (np.deg2rad(60), np.deg2rad(60)) # in radians
 px_max = (480, 640) # in px
