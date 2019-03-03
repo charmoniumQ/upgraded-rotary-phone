@@ -45,6 +45,8 @@ def run_shooter(shooter):
     if frame is None:
         print('frame none')
         return
+    else:
+        print('got frame')
     proc, fire_px_coords, fire_cnts = fire_finder.get_fires(frame)
     # fire_px_coords = [(400, 400)]
     all_fire_angles = list(map(geometry.px_coords_to_angles, fire_px_coords))

@@ -5,7 +5,7 @@ from time import sleep
 
 X_RANGE = (0, 180)
 Y_RANGE = (0, 180)
-Y_HOLD = 55
+Y_HOLD = 70
 X_OFFSET = 80
 
 class MotorDriver(object):
