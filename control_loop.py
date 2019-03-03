@@ -1,22 +1,21 @@
 from __future__ import print_function
+import os
 import cv2
 from .fire_finder import FireFinder
+from . import geometry
 from motors import Shooter, Driver
 from control import Controller
 
+# config
+video_device = int(os.environ.get('video_device', 1))
 
-def px_coords_to_space_coords(coords):
-    return (0, 0)
-
-
+# helpers
 def prioritize(fire_coords, fire_cnts):
+    # TODO
     return fire_coords[0]
 
-def coords_to_degrees(fire_coords):
-    # TODO
-    return (90, 90)
 
-
+# runners
 def run_driver(driver):
     fire_finder = FireFinder()
     controller = Controller()
@@ -32,21 +31,19 @@ def run_driver(driver):
 
 def run_shooter(shooter):
     while True:
-        ret, frame = fire_finder.cap.read() #Capture frame-by-frame
+        ret, frame = video_capture.read() #Capture frame-by-frame
         if not ret: #Invalid
             print(ret)
             print(frame)
+            raise RuntimeError()
 
         proc, fire_px_coords, fire_cnts = fire_finder.get_fires(frame)
-        fire_coords = list(map(px_coords_to_space_coords, fire_px_coords))
+        all_fire_angles = list(map(geometry.px_coords_to_angles, fire_px_coords))
+        fire_angle = prioritize(all_fire_angles)
+        shooter.aim_and_shoot(fire_angle[0], fire_angle[1], 2) # TODO adjust Time to Shoot
 
-        fire_coord = prioritize(fire_coords, fire_cnts)
-
-        x_deg, y_deg = coords_to_degrees(fire_coords)
-
-        shooter.aim_and_shoot(x_deg, y_deg, 2) # TODO adjust Time to Shoot
-
-
+# main
+video_capture = cv2.VideoCapture(video_device)
 shooter = Shooter()
 driver = Driver()
 with ThreadPoolExecutor(max_workers=10) as executor:
@@ -57,6 +54,4 @@ with ThreadPoolExecutor(max_workers=10) as executor:
     task2.result()
 
 
-#release the capture
-temp = cap.release() #if frame read correctly == True
-cv2.destroyAllWindows()
+video_capture.release()
