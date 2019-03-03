@@ -1,7 +1,7 @@
 from __future__ import print_function
 import cv2
 from .fire_finder import FireFinder
-from .shooter import Shooter
+import motors
 from .driver import Driver
 
 
@@ -11,6 +11,10 @@ def px_coords_to_space_coords(coords):
 
 def prioritize(fire_coords, fire_cnts):
     return fire_coords[0]
+
+def coords_to_degrees(fire_coords):
+    # TODO
+    return (90, 90)
 
 
 fire_finder = FireFinder()
@@ -27,9 +31,9 @@ while True:
 
         fire_coord = prioritize(fire_coords, fire_cnts)
 
-        driver.go(fire_coord)
+        x_deg, y_deg = coords_to_degrees(fire_coords)
 
-        shooter.aim_and_shoot(fire_coord):
+        motors.aim_and_shoot(x_deg, y_deg, 2) # TODO adjust Time to Shoot
 
 
 #release the capture
