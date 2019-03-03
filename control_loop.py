@@ -35,9 +35,7 @@ def run_driver(driver, res):
 def run_shooter(shooter):
     ret, frame = video_capture.read() #Capture frame-by-frame
     if not ret: #Invalid
-        print(ret)
-        print(frame)
-        #raise RuntimeError()
+        print('Cannot open frame from video camera')
 
     proc, fire_px_coords, fire_cnts = fire_finder.get_fires(frame)
     # fire_px_coords = [(400, 400)]
@@ -47,9 +45,9 @@ def run_shooter(shooter):
         fire_angle = prioritize(all_fire_angles, fire_cnts)
         print(fire_angle)
         shooter.aim_and_shoot(fire_angle[0], fire_angle[1], 2) # TODO adjust Time to Shoot
-    #shooter.aim_and_shoot(90, 90, .5) # TODO adjust Time to Shoot
 
 # main
+print(video_device)
 video_capture = cv2.VideoCapture(video_device)
 shooter = Shooter()
 driver = Driver()
