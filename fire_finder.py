@@ -1,8 +1,14 @@
 from __future__ import print_function
 import cv2
 import numpy as np
+import datetime
+import random
+import string
 
 """ Identify and locate fire in the environment. """
+
+def timestamp():
+    return int((datetime.datetime.now() - datetime.datetime(year=1970, month=1, day=1)).total_seconds())
 
 MIN_AREA = 500
 
@@ -48,6 +54,13 @@ class FireFinder(object):
                 cy = int(M['m01']/M['m00'])
                 fire_coords.append((cx, cy))
                 fire_cnts.append(contour)
+        t = timestamp()
+        for point in fire_coords:
+            cv2.circle(frame, point, 1, (0,255,0), thickness=3, lineType=8, shift=0)
+        cv2.imwrite('/tmp/{t}_frame.jpg'.format(**locals()), frame)
+        # cv2.imwrite('/tmp/{t}_light.jpg'.format(**locals()), light)
+        # cv2.imwrite('/tmp/{t}_color.jpg'.format(**locals()), color)
+        cv2.imwrite('/tmp/{t}_output.jpg'.format(**locals()), output)
 
         return output, fire_coords, fire_cnts
 

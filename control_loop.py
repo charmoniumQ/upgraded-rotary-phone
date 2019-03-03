@@ -43,7 +43,6 @@ def run_shooter(shooter):
     # fire_px_coords = [(400, 400)]
     all_fire_angles = list(map(geometry.px_coords_to_angles, fire_px_coords))
     all_fire_angles = list(map(geometry.rad2deg, all_fire_angles))
-    print(all_fire_angles)
     if all_fire_angles:
         fire_angle = prioritize(all_fire_angles, fire_cnts)
         print(fire_angle)

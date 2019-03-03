@@ -35,4 +35,4 @@ def rad2deg(angle):
 
 if __name__ == '__main__':
     hfov_calc = math.degrees(px_coords_to_angles(px_max)[0]) - math.degrees(px_coords_to_angles((0,0))[0])
-    print(f'horizontal field of vision is {hfov_calc:.1f} degrees')
+    print('horizontal field of vision is {hfov_calc:.1f} degrees'.format(**locals()))

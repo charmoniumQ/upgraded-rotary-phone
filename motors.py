@@ -3,7 +3,10 @@ import RPi.GPIO as GPIO
 from concurrent.futures import ThreadPoolExecutor
 from time import sleep
 
-RANGE = (0, 180)
+X_RANGE = (0, 180)
+Y_RANGE = (0, 180)
+Y_HOLD = 55
+X_OFFSET = 80
 
 class MotorDriver(object):
 
@@ -13,7 +16,7 @@ class MotorDriver(object):
         servo_pwm.ChangeDutyCycle(duty)
         print("writing angle")
 
-        sleep(.5)
+        sleep(1.2)
 
         GPIO.output(servo_pin, False)
         servo_pwm.ChangeDutyCycle(0)
@@ -73,8 +76,6 @@ class Shooter(MotorDriver):
         self.PIN_PAN = 12
         self.PIN_TILT = 16
         self.PIN_SHOOT = 18 # TODO check pins
-        self.PAN_OFFSET = 0
-        self.TILT_OFFSET = 0
 
         # Setup
         GPIO.setmode(GPIO.BOARD)
@@ -90,9 +91,15 @@ class Shooter(MotorDriver):
 
 
     def aim_turret(self, x_deg, y_deg):
-        x_deg -= self.PAN_OFFSET
-        y_deg -= self.TILT_OFFSET
-        if RANGE[0] < x_deg < RANGE[1] and RANGE[0] < y_deg < RANGE[1]:
+        # x_deg = (x_deg - 210) *  (0 - 180) / (210 - -20)
+        cmin = -80
+        cmax = 80
+        smin = 25
+        smax = 120
+        x_deg = ((smax - smin) / (cmax - cmin)) * (x_deg - cmin) + smin
+        y_deg = Y_HOLD
+        # if X_RANGE[0] <= x_deg <= X_RANGE[1] and Y_RANGE[0] <= y_deg <= Y_RANGE[1]:
+        if True:
             with ThreadPoolExecutor(max_workers=4) as executor:
                 task1 = executor.submit(self.write_angle, self.PIN_PAN, self.pwm_pan, x_deg)
                 task2 = executor.submit(self.write_angle, self.PIN_TILT, self.pwm_tilt, y_deg)
@@ -111,3 +118,18 @@ class Shooter(MotorDriver):
     def aim_and_shoot(self, x_deg, y_deg, num_seconds):
         if self.aim_turret(x_deg, y_deg):
             self.shoot(num_seconds)
+
+
+if __name__ == '__main__':
+    shooter = Shooter()
+
+    # shooter.write_angle(shooter.PIN_TILT, shooter.pwm_tilt, 0)
+    # shooter.write_angle(shooter.PIN_PAN, shooter.pwm_pan, 0)
+    # sleep(2)
+    # shooter.write_angle(shooter.PIN_PAN, shooter.pwm_pan, 180)
+    # sleep(2)
+
+    shooter.aim_turret(-80, Y_HOLD)
+    sleep(2)
+    shooter.aim_turret(80, Y_HOLD)
+    sleep(2)
