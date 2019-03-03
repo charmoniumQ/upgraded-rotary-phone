@@ -8,12 +8,6 @@ angle is an angle offset from the center in radians
 floor_coords are coordinages on the floor in centimeters
 '''
 
-#from scipy.optimize import minimize
-import math as np
-
-np.deg2rad = np.radians
-
-fov = (np.deg2rad(60), np.deg2rad(60)) # in radians
 px_max = (480, 640) # in px
 cm2in = 2.54
 ruler_offset = 3.125
@@ -34,6 +28,9 @@ def angles_to_space_coords(angle):
     y = height / math.tan(angles[0])
     x = y * math.tan(angles[1])
     return (x, y)
+
+def rad2deg(angle):
+    return tuple(map(math.degrees, angle))
 
 
 if __name__ == '__main__':

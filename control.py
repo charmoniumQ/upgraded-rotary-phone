@@ -20,7 +20,7 @@ class Controller(object):
         char = self.getch()
 
         if (char == "q"):
-            exit(0)  
+            return 0
 
         if (char == "a"):
             print('Left pressed')

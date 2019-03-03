@@ -1,6 +1,9 @@
-import RPi.GPIO as GPIO
+#import RPi.GPIO as GPIO
+from mock_gpio import GPIO
 from concurrent.futures import ThreadPoolExecutor
 from time import sleep
+
+RANGE = (0, 180)
 
 class MotorDriver(object):
 
@@ -8,6 +11,7 @@ class MotorDriver(object):
         duty = angle / 18 + 2 # TODO calibrate function
         GPIO.output(servo_pin, True)
         servo_pwm.ChangeDutyCycle(duty)
+        print("writing angle")
 
         sleep(.5)
 
@@ -58,7 +62,8 @@ class Driver(MotorDriver):
                 task2 = None
 
             task1.done()
-            dummy = task2.done() if task2 else None
+            if task2:
+                task2.done()
 
 
 class Shooter(MotorDriver):
@@ -68,6 +73,8 @@ class Shooter(MotorDriver):
         self.PIN_PAN = 12
         self.PIN_TILT = 16
         self.PIN_SHOOT = 18 # TODO check pins
+        self.PAN_OFFSET = 0
+        self.TILT_OFFSET = 0
 
         # Setup
         GPIO.setmode(GPIO.BOARD)
@@ -83,13 +90,18 @@ class Shooter(MotorDriver):
 
 
     def aim_turret(self, x_deg, y_deg):
-        with ThreadPoolExecutor(max_workers=4) as executor:
-            task1 = executor.submit(self.write_angle, self.PIN_PAN, self.pwm_pan, x_deg)
-            task2 = executor.submit(self.write_angle, self.PIN_TILT, self.pwm_tilt, y_deg)
+        x_deg -= self.PAN_OFFSET
+        y_deg -= self.TILT_OFFSET
+        if RANGE[0] < x_deg < RANGE[1] and RANGE[0] < y_deg < RANGE[1]:
+            with ThreadPoolExecutor(max_workers=4) as executor:
+                task1 = executor.submit(self.write_angle, self.PIN_PAN, self.pwm_pan, x_deg)
+                task2 = executor.submit(self.write_angle, self.PIN_TILT, self.pwm_tilt, y_deg)
 
-            task1.done()
-            task2.done()
-
+                task1.done()
+                task2.done()
+            return True
+        else:
+            return False
 
 
     def shoot(self, num_seconds):
@@ -97,6 +109,5 @@ class Shooter(MotorDriver):
 
 
     def aim_and_shoot(self, x_deg, y_deg, num_seconds):
-        self.aim_turret(x_deg, y_deg)
-        self.shoot(num_seconds)
-
+        if self.aim_turret(x_deg, y_deg):
+            self.shoot(num_seconds)
