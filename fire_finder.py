@@ -1,5 +1,6 @@
 from __future__ import print_function
 import cv2
+import numpy as np
 
 """ Identify and locate fire in the environment. """
 
@@ -27,8 +28,12 @@ class FireFinder(object):
         return mask
 
     def get_fires(self, frame):
-        light = self.getLight(frame)
-        color = self.getColor(frame)
+        height, width, channels = frame.shape
+        light = np.zeros((height, width), np.uint8)
+        color = np.zeros((height, width), np.uint8)
+        for i in range(0,6):
+            light = np.add(light, self.getLight(frame))
+            color = np.add(color, self.getColor(frame))
 
         output = cv2.bitwise_and(light, color)
         im2, contours, hierarchy = cv2.findContours(output, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
