@@ -38,7 +38,7 @@ class Driver(MotorDriver):
         GPIO.setup(self.PIN_RIGHT, GPIO.OUT)
 
 
-    # dir=0 is forward, dir=1 is left, dir=2 is right
+    # dir=0 is neutral, dir=1 is left, dir=2 is right
     def drive(self, direction, num_seconds, backwards=False):
         with ThreadPoolExecutor(max_workers=4) as executor:
             if not backwards:
@@ -50,7 +50,7 @@ class Driver(MotorDriver):
                 task2 = executor.submit(self.write_pin_high, PIN_LEFT, num_seconds)
             elif direction == 2:
                 task2 = executor.submit(self.write_pin_high, PIN_RIGHT, num_seconds)
-            elif direction == 3:
+            else:
                 task2 = None
 
             task1.result()

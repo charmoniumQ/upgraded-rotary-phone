@@ -2,6 +2,7 @@ from __future__ import print_function
 import cv2
 from .fire_finder import FireFinder
 from motors import Shooter, Driver
+from control import Controller
 
 
 def px_coords_to_space_coords(coords):
@@ -18,8 +19,15 @@ def coords_to_degrees(fire_coords):
 
 def run_driver(driver):
     fire_finder = FireFinder()
+    controller = Controller()
     while True:
-        driver.drive(0, 1) # TODO pick intelligently
+        forwardback, leftright = controller.get_control()
+
+        if forwardback == 0:
+            continue
+
+        forward = True if forwardBack == 1 else False
+        driver.drive(leftright, .25, forward) # TODO pick intelligently
 
 
 def run_shooter(shooter):
