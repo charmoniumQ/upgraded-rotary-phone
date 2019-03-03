@@ -1,3 +1,6 @@
+from __future__ import print_function
+import math
+
 '''
 positive x is right of center-of-view and positive y is below center-of-view
 px_coord is a pixel-number
@@ -5,11 +8,16 @@ angle is an angle offset from the center in radians
 floor_coords are coordinages on the floor in centimeters
 '''
 
-from scipy.optimize import minimize
-
-fov = (np.deg2rad(60), np.deg2rad(60)) # in radians
 px_max = (480, 640) # in px
-height = 10 # in cm
+cm2in = 2.54
+ruler_offset = 3.125
+across = 54.75 - ruler_offset
+away = 64.5 - ruler_offset
+hfov = 2 * math.atan(across / 2 / away)
+fov = (hfov, hfov / px_max[0] * px_max[1]) # in radians
+height = 5.625 * cm2in # in cm
+
+
 def px_coords_to_angles(coords):
     return (
         coords[0] / px_max[0] * fov[0] - fov[0] / 2,
@@ -17,6 +25,11 @@ def px_coords_to_angles(coords):
     )
 
 def angles_to_space_coords(angle):
-    y = height / np.tan(angles[0])
-    x = y * np.tan(angles[1])
+    y = height / math.tan(angles[0])
+    x = y * math.tan(angles[1])
     return (x, y)
+
+
+if __name__ == '__main__':
+    hfov_calc = math.degrees(px_coords_to_angles(px_max)[0]) - math.degrees(px_coords_to_angles((0,0))[0])
+    print(f'horizontal field of vision is {hfov_calc:.1f} degrees')
