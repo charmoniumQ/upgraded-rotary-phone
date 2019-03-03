@@ -29,39 +29,64 @@ def run_driver(driver, res):
         leftright = 1
     elif res == 4:
         leftright = 2
-    driver.drive(leftright, 0.5, backward) # TODO pick intelligently
+    elif res == 5:
+        return
+    driver.drive(leftright, 1, backward) # TODO pick intelligently
+
+def get_frame():
+    global frame
+    while True:
+        ret, frame = video_capture.read() #Capture frame-by-frame
+        if not ret: #Invalid
+            print('Cannot open frame from video camera')
 
 
 def run_shooter(shooter):
-    ret, frame = video_capture.read() #Capture frame-by-frame
-    if not ret: #Invalid
-        print('Cannot open frame from video camera')
-
+    if frame is None:
+        print('frame none')
+        return
     proc, fire_px_coords, fire_cnts = fire_finder.get_fires(frame)
     # fire_px_coords = [(400, 400)]
     all_fire_angles = list(map(geometry.px_coords_to_angles, fire_px_coords))
     all_fire_angles = list(map(geometry.rad2deg, all_fire_angles))
     if all_fire_angles:
         fire_angle = prioritize(all_fire_angles, fire_cnts)
+        fire_angle = (-fire_angle[0], fire_angle[1])
         print(fire_angle)
         shooter.aim_and_shoot(fire_angle[0], fire_angle[1], 2) # TODO adjust Time to Shoot
 
 # main
-print(video_device)
+frame = None
+quit = False
 video_capture = cv2.VideoCapture(video_device)
 shooter = Shooter()
 driver = Driver()
 controller = Controller()
 fire_finder = FireFinder()
-with ThreadPoolExecutor(max_workers=10) as executor:
-    while True:
-        res = controller.get_control()
-        if res == 0:
-            break
-        task1 = executor.submit(run_shooter, shooter)
-        task2 = executor.submit(run_driver, driver, res)
 
-        task1.result()
-        task2.result()
+import threading
+frame_thread = threading.Thread(target=get_frame)
+frame_thread.start()
+
+try:
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        while True:
+            res = controller.get_control()
+            if res == 0:
+                break
+            # curframe = None
+            # while True:
+            #     ret, frame = video_capture.read()
+            #     if frame is not None:
+            #         curframe = frame
+            #     if not ret:
+            #         break
+            task1 = executor.submit(run_shooter, shooter)
+            task2 = executor.submit(run_driver, driver, res)
+
+            task1.result()
+            task2.result()
+finally:
+    quit = True
 
 video_capture.release()

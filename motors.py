@@ -94,8 +94,8 @@ class Shooter(MotorDriver):
         # x_deg = (x_deg - 210) *  (0 - 180) / (210 - -20)
         cmin = -80
         cmax = 80
-        smin = 25
-        smax = 120
+        smin = 10
+        smax = 110
         x_deg = ((smax - smin) / (cmax - cmin)) * (x_deg - cmin) + smin
         y_deg = Y_HOLD
         # if X_RANGE[0] <= x_deg <= X_RANGE[1] and Y_RANGE[0] <= y_deg <= Y_RANGE[1]:

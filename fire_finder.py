@@ -60,7 +60,7 @@ class FireFinder(object):
         cv2.imwrite('/tmp/{t}_frame.jpg'.format(**locals()), frame)
         # cv2.imwrite('/tmp/{t}_light.jpg'.format(**locals()), light)
         # cv2.imwrite('/tmp/{t}_color.jpg'.format(**locals()), color)
-        cv2.imwrite('/tmp/{t}_output.jpg'.format(**locals()), output)
+        # cv2.imwrite('/tmp/{t}_output.jpg'.format(**locals()), output)
 
         return output, fire_coords, fire_cnts
 

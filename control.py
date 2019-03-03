@@ -1,23 +1,17 @@
 import time
 import sys, termios, tty, os
+import getch2
 
 class Controller(object):
-
-    def getch(self):
-        fd = sys.stdin.fileno()
-        old_settings = termios.tcgetattr(fd)
-        try:
-            tty.setraw(sys.stdin.fileno())
-            ch = sys.stdin.read(1)
-
-        finally:
-            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-        return ch
-
+    def __init__(self):
+        self.kb = getch2.KBHit()
 
     # 1 = forward, 2 = backward, 3 = left, 4 = right
     def get_control(self):
-        char = self.getch()
+        if not self.kb.kbhit():
+            return 5
+        char = self.kb.getch()
+        print('Got char', char)
 
         if (char == "q"):
             return 0
